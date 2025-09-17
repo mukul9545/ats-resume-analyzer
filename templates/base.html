@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Smart ATS Resume Analyzer{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .main-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        margin: 2rem auto;
+        padding: 2rem;
+      }
+
+      .header-section {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e9ecef;
+      }
+
+      .header-section h1 {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-control,
+      .form-select {
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        padding: 12px 16px;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 16px 20px;
+      }
+
+      .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .file-input-wrapper input[type="file"] {
+        position: absolute;
+        left: -9999px;
+      }
+
+      .file-input-label {
+        cursor: pointer;
+        display: block;
+        padding: 12px 16px;
+        border: 2px dashed #667eea;
+        border-radius: 12px;
+        text-align: center;
+        background: rgba(102, 126, 234, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .file-input-label:hover {
+        border-color: #764ba2;
+        background: rgba(118, 75, 162, 0.1);
+      }
+
+      .file-selected {
+        border-style: solid;
+        background: rgba(40, 167, 69, 0.1);
+        border-color: #28a745;
+      }
+
+      .loading {
+        display: none;
+      }
+
+      .loading.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .spinner-border-sm {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      .results-section {
+        margin-top: 2rem;
+      }
+
+      .result-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #667eea;
+      }
+
+      .match-percentage {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .keyword-tag {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin: 2px;
+        display: inline-block;
+        font-size: 0.9rem;
+      }
+
+      .qa-item {
+        background: #fff;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .question {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+      }
+
+      .answer {
+        color: #6c757d;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="main-container">
+        <div class="header-section">
+          <h1><i class="fas fa-file-alt"></i> Smart ATS Resume Analyzer</h1>
+          <p class="text-muted">
+            Evaluate and improve your resume based on Job Description
+          </p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div
+          class="alert alert-{{ 'danger' if category == 'error' else 'info' }} alert-dismissible fade show"
+        >
+          <i
+            class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'info-circle' }}"
+          ></i>
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+          ></button>
+        </div>
+        {% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock %}
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // File input handling
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("resume_file");
+        const fileLabel = document.querySelector(".file-input-label");
+        const form = document.getElementById("analysisForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const loading = document.getElementById("loading");
+
+        if (fileInput && fileLabel) {
+          fileInput.addEventListener("change", function () {
+            if (this.files && this.files.length > 0) {
+              fileLabel.innerHTML = `<i class="fas fa-check-circle text-success"></i> ${this.files[0].name}`;
+              fileLabel.classList.add("file-selected");
+            } else {
+              fileLabel.innerHTML =
+                '<i class="fas fa-upload"></i> Click to upload your resume (PDF)';
+              fileLabel.classList.remove("file-selected");
+            }
+          });
+        }
+
+        // Form submission handling
+        if (form) {
+          form.addEventListener("submit", function (e) {
+            const jobDescription = document
+              .getElementById("job_description")
+              .value.trim();
+            const resumeFile = fileInput ? fileInput.files[0] : null;
+
+            if (!jobDescription) {
+              e.preventDefault();
+              alert("Please enter a job description.");
+              return;
+            }
+
+            if (!resumeFile) {
+              e.preventDefault();
+              alert("Please upload your resume.");
+              return;
+            }
+
+            // Show loading state
+            if (submitBtn && loading) {
+              submitBtn.style.display = "none";
+              loading.classList.add("show");
+            }
+          });
+        }
+      });
+    </script>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

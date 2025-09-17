@@ -1,0 +1,424 @@
+{% extends "base.html" %} {% block content %}
+<div class="results-section">
+  <!-- Back Button -->
+  <div class="mb-3">
+    <a href="/" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left"></i> Analyze Another Resume
+    </a>
+  </div>
+
+  <h2 class="mb-4"><i class="fas fa-chart-line"></i> ATS Evaluation Results</h2>
+
+  <div class="row">
+    <!-- Match Score -->
+    <div class="col-md-6 mb-4">
+      <div class="result-card">
+        <h5><i class="fas fa-percentage"></i> Job Description Match</h5>
+        <div class="match-percentage">{{ results.get('JD_Match', 'N/A') }}</div>
+      </div>
+    </div>
+
+    <!-- ATS Compatibility Score -->
+    <div class="col-md-6 mb-4">
+      <div class="result-card">
+        <h5><i class="fas fa-robot"></i> ATS Compatibility</h5>
+        <div class="ats-score">
+          {% if results.get('Detailed_Analysis',
+          {}).get('ATS_Compatibility_Score') %} {{
+          results.Detailed_Analysis.ATS_Compatibility_Score }} {% else %} N/A {%
+          endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Summary -->
+  <div class="row">
+    <div class="col-12 mb-4">
+      <div class="result-card">
+        <h5><i class="fas fa-user"></i> Profile Summary</h5>
+        <p class="mb-0">
+          {{ results.get('Profile_Summary', 'No summary available') }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Missing Keywords -->
+  <div class="row">
+    <div class="col-12 mb-4">
+      <div class="result-card">
+        <h5><i class="fas fa-tags"></i> Missing Keywords</h5>
+        {% if results.get('Missing_Keywords') %}
+        <div class="mt-3">
+          {% for keyword in results.Missing_Keywords %}
+          <span class="keyword-tag">{{ keyword }}</span>
+          {% endfor %}
+        </div>
+        <div class="mt-3 p-3 bg-light rounded">
+          <small class="text-muted">
+            <i class="fas fa-info-circle me-1"></i>
+            Consider incorporating these keywords from the job description to
+            improve your ATS score
+          </small>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">No missing keywords identified</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Recommendations Section -->
+  <div class="row">
+    <div class="col-12 mb-4">
+      <div class="result-card">
+        <h5>
+          <i class="fas fa-lightbulb"></i> Detailed Improvement Recommendations
+        </h5>
+        {% if results.get('Recommendations') %} {% set recommendations =
+        results.Recommendations %}
+        <!-- Check if recommendations is a list of objects or simple strings -->
+        {% if recommendations and recommendations[0] is mapping %}
+        <!-- New detailed format -->
+        <div class="recommendations-container mt-3">
+          {% for rec in recommendations %}
+          <div class="recommendation-item mb-4 p-4 border rounded">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="d-flex align-items-center mb-2">
+                  <span
+                    class="priority-badge priority-{{ rec.get('Priority', 'Medium').lower() }} me-2"
+                  >
+                    {{ rec.get('Priority', 'Medium') }} Priority
+                  </span>
+                  <h6 class="mb-0 fw-bold">{{ rec.get('Area', 'General') }}</h6>
+                </div>
+                <p class="recommendation-text mb-3">
+                  {{ rec.get('Recommendation', 'No recommendation provided') }}
+                </p>
+
+                {% if rec.get('Action_Items') %}
+                <div class="action-items mb-3">
+                  <strong class="text-primary">Action Items:</strong>
+                  <ul class="mt-2 mb-0">
+                    {% for action in rec.Action_Items %}
+                    <li class="mb-1">{{ action }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endif %}
+
+                <div class="recommendation-meta">
+                  {% if rec.get('Timeline') %}
+                  <div class="d-inline-block me-4">
+                    <small class="text-muted">
+                      <i class="fas fa-clock me-1"></i>
+                      <strong>Timeline:</strong> {{ rec.Timeline }}
+                    </small>
+                  </div>
+                  {% endif %} {% if rec.get('Impact') %}
+                  <div class="d-inline-block">
+                    <small class="text-success">
+                      <i class="fas fa-chart-line me-1"></i>
+                      <strong>Impact:</strong> {{ rec.Impact }}
+                    </small>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-md-4 text-end">
+                <div class="recommendation-icon">
+                  <i class="fas fa-target fa-2x text-primary"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <!-- Fallback for old simple format -->
+        <ul class="list-unstyled mt-3">
+          {% for recommendation in recommendations %}
+          <li class="mb-2">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            {{ recommendation }}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% else %}
+        <p class="text-muted mb-0">No recommendations available</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Analysis Section -->
+  <div class="row">
+    <div class="col-12 mb-4">
+      <div class="result-card">
+        <h5><i class="fas fa-microscope"></i> Detailed Analysis</h5>
+        {% if results.get('Detailed_Analysis') %}
+        <div class="analysis-grid mt-3">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="analysis-item p-3 border rounded">
+                <h6 class="text-primary">
+                  <i class="fas fa-code me-2"></i>Technical Skills Match
+                </h6>
+                <p class="mb-0 small">
+                  {{ results.Detailed_Analysis.get('Technical_Skills_Match',
+                  'N/A') }}
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="analysis-item p-3 border rounded">
+                <h6 class="text-primary">
+                  <i class="fas fa-briefcase me-2"></i>Experience Relevance
+                </h6>
+                <p class="mb-0 small">
+                  {{ results.Detailed_Analysis.get('Experience_Relevance',
+                  'N/A') }}
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="analysis-item p-3 border rounded">
+                <h6 class="text-primary">
+                  <i class="fas fa-graduation-cap me-2"></i>Education Assessment
+                </h6>
+                <p class="mb-0 small">
+                  {{ results.Detailed_Analysis.get('Education_Assessment',
+                  'N/A') }}
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="analysis-item p-3 border rounded">
+                <h6 class="text-success">
+                  <i class="fas fa-star me-2"></i>Key Strengths
+                </h6>
+                {% if results.Detailed_Analysis.get('Key_Strengths') %}
+                <ul class="mb-0 small">
+                  {% for strength in results.Detailed_Analysis.Key_Strengths %}
+                  <li>{{ strength }}</li>
+                  {% endfor %}
+                </ul>
+                {% else %}
+                <p class="mb-0 small">N/A</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">No detailed analysis available</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Interview Questions & Answers -->
+  <div class="row">
+    <div class="col-12">
+      <div class="result-card">
+        <h5>
+          <i class="fas fa-question-circle"></i> Comprehensive Interview
+          Questions & Answers (25)
+        </h5>
+        {% if results.get('Interview_Questions_Answers') %}
+        <div class="mt-3">
+          {% for qa in results.Interview_Questions_Answers %}
+          <div class="qa-item mb-3 p-3 border rounded">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="question">
+                  <i class="fas fa-question text-primary me-2"></i>
+                  <strong>Q{{ loop.index }}:</strong> {{ qa.get('Question', 'No
+                  question available') }}
+                </div>
+                <div class="answer mt-2">
+                  <i class="fas fa-lightbulb text-warning me-2"></i>
+                  <strong>A:</strong> {{ qa.get('Answer', 'No answer available')
+                  }}
+                </div>
+              </div>
+              <div class="col-md-4 text-end">
+                <span class="badge bg-secondary"
+                  >{{ qa.get('Category', 'General') }}</span
+                >
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="mt-4 p-3 bg-light rounded">
+            <h6>
+              <i class="fas fa-info-circle"></i> Interview Categories Covered:
+            </h6>
+            <div class="row">
+              {% set categories = results.Interview_Questions_Answers |
+              map(attribute='Category') | list %} {% for category in categories
+              | unique %}
+              <div class="col-md-3 col-sm-6 mb-2">
+                <span class="badge bg-primary">{{ category }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">No interview questions available</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="row mt-4">
+    <div class="col-12 text-center">
+      <button class="btn btn-success me-3" onclick="window.print()">
+        <i class="fas fa-print"></i> Print Results
+      </button>
+      <button class="btn btn-info me-3" onclick="shareResults()">
+        <i class="fas fa-share"></i> Share Results
+      </button>
+      <a href="/" class="btn btn-primary">
+        <i class="fas fa-redo"></i> Analyze Another Resume
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .priority-high {
+    background-color: #dc3545;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+  }
+
+  .priority-medium {
+    background-color: #ffc107;
+    color: black;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+  }
+
+  .priority-low {
+    background-color: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+  }
+
+  .recommendation-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid #007bff;
+  }
+
+  .recommendation-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .recommendation-text {
+    color: #495057;
+    line-height: 1.6;
+  }
+
+  .action-items ul {
+    padding-left: 1.2rem;
+  }
+
+  .action-items li {
+    color: #6c757d;
+  }
+
+  .analysis-item {
+    transition: all 0.3s ease;
+  }
+
+  .analysis-item:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .match-percentage,
+  .ats-score {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+    text-align: center;
+  }
+
+  .keyword-tag {
+    display: inline-block;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 4px 12px;
+    margin: 2px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    border: 1px solid #dee2e6;
+  }
+
+  @media print {
+    .btn,
+    .alert,
+    nav {
+      display: none !important;
+    }
+    .recommendation-item,
+    .analysis-item,
+    .qa-item {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  }
+</style>
+
+{% endblock %} {% block scripts %}
+<script>
+  function shareResults() {
+    if (navigator.share) {
+      navigator.share({
+        title: "ATS Resume Analysis Results",
+        text: "Check out my resume analysis results!",
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href).then(function () {
+        alert("Results URL copied to clipboard!");
+      });
+    }
+  }
+
+  const printStyles = `
+    @media print {
+      .btn, .alert, nav { display: none !important; }
+      .main-container { 
+        background: white !important; 
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+      }
+      body { 
+        background: white !important; 
+        -webkit-print-color-adjust: exact;
+      }
+      .result-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  `;
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = printStyles;
+  document.head.appendChild(styleSheet);
+</script>
+{% endblock %}

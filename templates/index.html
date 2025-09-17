@@ -1,0 +1,119 @@
+{% extends "base.html" %} {% block content %}
+<form
+  id="analysisForm"
+  method="POST"
+  action="/analyze"
+  enctype="multipart/form-data"
+>
+  <div class="row">
+    <div class="col-12">
+      <div class="mb-4">
+        <label for="job_description" class="form-label">
+          <i class="fas fa-briefcase"></i> Job Description
+        </label>
+        <textarea
+          class="form-control"
+          id="job_description"
+          name="job_description"
+          rows="8"
+          placeholder="Paste the complete job description here..."
+          required
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="mb-4">
+        <label for="resume_file" class="form-label">
+          <i class="fas fa-file-pdf"></i> Resume Upload
+        </label>
+        <div class="file-input-wrapper">
+          <input
+            type="file"
+            id="resume_file"
+            name="resume_file"
+            accept=".pdf"
+            required
+          />
+          <label for="resume_file" class="file-input-label">
+            <i class="fas fa-upload"></i> Click to upload your resume (PDF)
+          </label>
+        </div>
+        <small class="form-text text-muted">
+          <i class="fas fa-info-circle"></i> Please upload a PDF file (max 16MB)
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 text-center">
+      <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+        <i class="fas fa-search"></i> Analyze Resume
+      </button>
+
+      <div class="loading" id="loading">
+        <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+        <span>Analyzing your resume...</span>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- Features Section -->
+<div class="row mt-5">
+  <div class="col-12">
+    <div class="row text-center">
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="p-3">
+          <i class="fas fa-percentage fa-2x text-primary mb-2"></i>
+          <h6>Match Score</h6>
+          <small class="text-muted"
+            >Get percentage match with job requirements</small
+          >
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="p-3">
+          <i class="fas fa-tags fa-2x text-primary mb-2"></i>
+          <h6>Keywords</h6>
+          <small class="text-muted">Identify missing important keywords</small>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="p-3">
+          <i class="fas fa-lightbulb fa-2x text-primary mb-2"></i>
+          <h6>Recommendations</h6>
+          <small class="text-muted"
+            >Get actionable improvement suggestions</small
+          >
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="p-3">
+          <i class="fas fa-question-circle fa-2x text-primary mb-2"></i>
+          <h6>Interview Prep</h6>
+          <small class="text-muted"
+            >Practice with potential interview questions</small
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if raw_response %}
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="alert alert-warning">
+      <h5><i class="fas fa-exclamation-triangle"></i> Raw Response (Debug)</h5>
+      <pre style="white-space: pre-wrap; max-height: 300px; overflow-y: auto">
+{{ raw_response }}</pre
+      >
+    </div>
+  </div>
+</div>
+{% endif %} {% endblock %}
+
